@@ -11,20 +11,20 @@ usage: surgeon.py [-h] [-o <b>OUTPUT</b>] [-n <b>NAME</b>] [-ca <b>CATEGORY</b>]
 
 Operate on Surge patch files, extract wavetables and XML.
 
-  <b>INPUT</b><span style="margin-left:16em">input patch file name</span>
+  <b>INPUT</b>                                input patch file name
 
-  -h, --help<span style="margin-left:13em"> show this help message and exit</span>
-  -o <b>OUTPUT</b>, --output <b>OUTPUT</b><span style="margin-left:5em"> output patch file name</span>
-  -n <b>NAME</b>, --name <b>NAME</b><span style="margin-left:8em"> new name for patch</span>
-  -ca <b>CATEGORY</b>, --category <b>CATEGORY</b><span style="margin-left:2em">new category for patch</span>
-  -co <b>COMMENT</b>, --comment <b>COMMENT</b><span style="margin-left:3em"> new comment for patch</span>
-  -a <b>AUTHOR</b>, --author <b>AUTHOR</b><span style="margin-left:5em"> new author for patch</span>
-  -x [<b>OUTXML</b>], --xml [<b>OUTXML</b>]<span style="margin-left:5em">XML output file name</span>
-  -ix <b>INXML</b>, --inxml <b>INXML</b><span style="margin-left:6em"> read new XML from <b>INXML</b></span>
-  -w [<b>OUTWAV</b>], --wav [<b>OUTWAV</b>]<span style="margin-left:5em">beginning for names of .WAV files</span>
-  -p <b>NAME</b> <b>VALUE</b>, --param <b>NAME</b> <b>VALUE</b><span style="margin-left:2em">set <b>NAME</b>d parameter to <b>VALUE</b></span>
+  -h, --help                           show this help message and exit
+  -o <b>OUTPUT</b>, --output <b>OUTPUT</b>           output patch file name
+  -n <b>NAME</b>, --name <b>NAME</b>                 new name for patch
+  -ca <b>CATEGORY</b>, --category <b>CATEGORY</b>    new category for patch
+  -co <b>COMMENT</b>, --comment <b>COMMENT</b>       new comment for patch
+  -a <b>AUTHOR</b>, --author <b>AUTHOR</b>           new author for patch
+  -x [<b>OUTXML</b>], --xml [<b>OUTXML</b>]          XML output file name
+  -ix <b>INXML</b>, --inxml <b>INXML</b>             read new XML from <b>INXML</b>
+  -w [<b>OUTWAV</b>], --wav [<b>OUTWAV</b>]          beginning for names of .WAV files
+  -p <b>NAME</b> <b>VALUE</b>, --param <b>NAME</b> <b>VALUE</b>    set <b>NAME</b>d parameter to <b>VALUE</b>
   -cc <b>INDEX</b> <b>BIPOLAR</b> <b>VALUE</b> <b>LABEL</b>,
-  --control <b>INDEX</b> <b>BIPOLAR</b> <b>VALUE</b> <b>LABEL</b><span style="margin-left:1em">set custom controller state</span>
+  --control <b>INDEX</b> <b>BIPOLAR</b> <b>VALUE</b> <b>LABEL</b>  set custom controller state
 
 If <b>OUTPUT</b> equals <b>INPUT</b>, it will *overwrite* <b>INPUT</b>.
 
