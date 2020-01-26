@@ -9,7 +9,7 @@ usage: surgeon.py [-h] [-o <b>OUTPUT</b>] [-n <b>NAME</b>] [-ca <b>CATEGORY</b>]
                   [-p <b>NAME</b> <b>VALUE</b>] [-cc <b>INDEX</b> <b>BIPOLAR</b> <b>VALUE</b> <b>LABEL</b>]
                   <b>INPUT</b>
 
-Operate on Surge patch files, extract wavetables, export and import XML.
+Operate on Surge patch files, extract wavetables, export and import XML. Version 1.0.1.
 
   <b>INPUT</b>                                input patch file name
 

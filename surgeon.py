@@ -238,8 +238,8 @@ def fillit(s): return textwrap.fill(' '.join(s.split()))
 
 def parseArgs():
     parser = argparse.ArgumentParser(
-        description =   fillit("""Operate on Surge patch files, extract wavetables, export and import XML.
-                                Version {0}.""".format(__version__)
+        description =   fillit("""Operate on Surge patch files, extract wavetables,
+                                  export and import XML.  Version {0}.""".format(__version__)
         ),
         epilog = '\n\n'.join( [fillit(s) for s in [
             """If OUTPUT equals INPUT, it will *overwrite* INPUT.""",
