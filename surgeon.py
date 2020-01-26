@@ -1,4 +1,6 @@
+# -*- coding: utf-8 -*-
 # Todd wrote this for the Surge synth project and places it in the public domain.
+__version__ = '1.0.1'
 
 import io, argparse, wave, struct, chunk, textwrap
 from enum import Enum
@@ -249,21 +251,24 @@ def parseArgs():
             """With -cc, use 'None' (without quotes) to leave BIPOLAR, VALUE,
                or LABEL unmodified.  (This means you cannot set LABEL
                to 'None' with this tool.)""",
+            """-ix reads new XML from INXML, and will apply any changes before writing OUTPUT.
+               You can use -x with -ix: -x will save the XML from INPUT in all cases.""",
                """There are no checks on any values.  Use at your own risk."""]]),
         formatter_class=argparse.RawTextHelpFormatter #RawDescriptionHelpFormatter
     )
 
-    parser.add_argument('input', metavar='INPUT', help='Input patch file name')
-    parser.add_argument('-o',  '--output', metavar='OUTPUT',  help='Output patch file name\n ')
-    parser.add_argument('-n',  '--name', metavar='NAME', help='New name for patch\n ')
-    parser.add_argument('-ca', '--category', metavar='CATEGORY', help='New category for patch\n ')
-    parser.add_argument('-co', '--comment', metavar='COMMENT', help='New comment for patch\n ')
-    parser.add_argument('-a',  '--author', metavar='AUTHOR', help='New author for patch\n ')
+    parser.add_argument('input', metavar='INPUT', help='input patch file name')
+    parser.add_argument('-o',  '--output', metavar='OUTPUT',  help='output patch file name\n ')
+    parser.add_argument('-n',  '--name', metavar='NAME', help='new name for patch\n ')
+    parser.add_argument('-ca', '--category', metavar='CATEGORY', help='new category for patch\n ')
+    parser.add_argument('-co', '--comment', metavar='COMMENT', help='new comment for patch\n ')
+    parser.add_argument('-a',  '--author', metavar='AUTHOR', help='new author for patch\n ')
     parser.add_argument('-x',  '--xml', metavar='OUTXML', nargs='?', const=True, default=None, help='XML output file name\n ')
-    parser.add_argument('-w',  '--wav', metavar='OUTWAV', nargs='?', const=True, default=None, help='Beginning for names of .WAV files\n ')
-    parser.add_argument('-p',  '--param', action='append', nargs=2, metavar=('NAME', 'VALUE'),help='Set NAMEd parameter to VALUE\n ')
+    parser.add_argument('-ix', '--inxml', metavar='INXML', help='read new XML from INXML\n ')
+    parser.add_argument('-w',  '--wav', metavar='OUTWAV', nargs='?', const=True, default=None, help='beginning for names of .WAV files\n ')
+    parser.add_argument('-p',  '--param', action='append', nargs=2, metavar=('NAME', 'VALUE'),help='set NAMEd parameter to VALUE\n ')
     parser.add_argument('-cc', '--control', action='append', nargs=4, \
-        metavar=('INDEX', 'BIPOLAR', 'VALUE', 'LABEL'),help='Set custom controller state')
+        metavar=('INDEX', 'BIPOLAR', 'VALUE', 'LABEL'),help='set custom controller state')
     args = parser.parse_args()
     dprint(args)
     return args
@@ -297,7 +302,12 @@ def main():
             writeAllWavs(args.wav, leader, wavey)     # -w filename
 
     if args.output:
-        xroot = ET.fromstring(sxml)
+        if args.inxml:
+            xroot = ET.parse(args.inxml).getroot()
+            pprint('New XML read from {0}'.format(args.inxml))
+        else:
+            xroot = ET.fromstring(sxml)
+
         setMetas(args, xroot)
         setParameters(args, xroot)
         setControllers(args, xroot)
