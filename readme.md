@@ -1,6 +1,6 @@
 # Surgeon
 
-* Mangle patches.
+* Mangle [Surge](https://surge-synthesizer.github.io/) patches.
 * Much danger.
 
 <pre>
@@ -9,7 +9,7 @@ usage: surgeon.py [-h] [-o <b>OUTPUT</b>] [-n <b>NAME</b>] [-ca <b>CATEGORY</b>]
                   [-p <b>NAME</b> <b>VALUE</b>] [-cc <b>INDEX</b> <b>BIPOLAR</b> <b>VALUE</b> <b>LABEL</b>]
                   <b>INPUT</b>
 
-Operate on Surge patch files, extract wavetables and XML.
+Operate on Surge patch files, extract wavetables, export and import XML.
 
   <b>INPUT</b>                                input patch file name
 
@@ -24,7 +24,7 @@ Operate on Surge patch files, extract wavetables and XML.
   -w [<b>OUTWAV</b>], --wav [<b>OUTWAV</b>]          beginning for names of .WAV files
   -p <b>NAME</b> <b>VALUE</b>, --param <b>NAME</b> <b>VALUE</b>    set <b>NAME</b>d parameter to <b>VALUE</b>
   -cc <b>INDEX</b> <b>BIPOLAR</b> <b>VALUE</b> <b>LABEL</b>,
-  --control <b>INDEX</b> <b>BIPOLAR</b> <b>VALUE</b> <b>LABEL</b>  set custom controller state
+  --control <b>INDEX</b> <b>BIPOLAR</b> <b>VALUE</b> <b>LABEL</b>  set <b>INDEX</b>ed controller's state
 
 If <b>OUTPUT</b> equals <b>INPUT</b>, it will *overwrite* <b>INPUT</b>.
 

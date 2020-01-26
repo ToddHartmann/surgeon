@@ -238,7 +238,9 @@ def fillit(s): return textwrap.fill(' '.join(s.split()))
 
 def parseArgs():
     parser = argparse.ArgumentParser(
-        description =   fillit("""Operate on Surge patch files, extract wavetables and XML."""),
+        description =   fillit("""Operate on Surge patch files, extract wavetables, export and import XML.
+                                Version {0}.""".format(__version__)
+        ),
         epilog = '\n\n'.join( [fillit(s) for s in [
             """If OUTPUT equals INPUT, it will *overwrite* INPUT.""",
             """All OUTPUT from -o will have slightly altered XML.  -x
@@ -268,7 +270,7 @@ def parseArgs():
     parser.add_argument('-w',  '--wav', metavar='OUTWAV', nargs='?', const=True, default=None, help='beginning for names of .WAV files\n ')
     parser.add_argument('-p',  '--param', action='append', nargs=2, metavar=('NAME', 'VALUE'),help='set NAMEd parameter to VALUE\n ')
     parser.add_argument('-cc', '--control', action='append', nargs=4, \
-        metavar=('INDEX', 'BIPOLAR', 'VALUE', 'LABEL'),help='set custom controller state')
+        metavar=('INDEX', 'BIPOLAR', 'VALUE', 'LABEL'),help="set INDEXed controller's state")
     args = parser.parse_args()
     dprint(args)
     return args
