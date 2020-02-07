@@ -3,6 +3,9 @@
 * Mangle [Surge](https://surge-synthesizer.github.io/) patches.
 * Much danger.
 
+You can edit extracted XML with [XML Notepad](https://github.com/microsoft/xmlnotepad) (Windows)
+or [QXmlEdit](https://github.com/lbellonda/qxmledit) (cross-platform).
+
 <pre>
 usage: surgeon.py [-h] [-o <b>OUTPUT</b>] [-n <b>NAME</b>] [-ca <b>CATEGORY</b>] [-co <b>COMMENT</b>]
                   [-a <b>AUTHOR</b>] [-x [<b>OUTXML</b>]] [-ix <b>INXML</b>] [-w [<b>OUTWAV</b>]]

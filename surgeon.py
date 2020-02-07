@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Todd wrote this for the Surge synth project and places it in the public domain.
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 
 import io, argparse, wave, struct, chunk, textwrap
 from enum import Enum
@@ -146,7 +146,7 @@ def getparts(infile):
         dprint('End of XML: 0x{:04X}'.format(pf.tell()))
 
         wavey = pf.read()    # anything else, if any
-    pprint('Patch read from {0}'.format(infile))
+    pprint('Patch read from {0}'.format(path.abspath(infile)))
     return leader, sxml, wavey
 #
 def splitFixExt(basename, desired):
@@ -161,7 +161,7 @@ def writeparts(basename, leader, newxml, wavey):
         nf.write(leader)
         nf.write(newxml)
         nf.write(wavey)
-    pprint('Patch written to {0}'.format(outfile))
+    pprint('Patch written to {0}'.format(path.abspath(outfile)))
 #
 oscNames = [''.join(x) for x in product('AB','123')]  # A1,A2…B3
 #
@@ -195,13 +195,13 @@ def writeAllWavs(basename, leader, wavey):
             wavname = '{}-{}-{}x{}{}'.format(root, oscNames[osc], numwav, sizwav, extn)
             with open(wavname, 'wb') as f:
                 f.write(surged)
-            pprint('Wavetable written to {0}'.format(wavname))
+            pprint('Wavetable written to {0}'.format(path.abspath(wavname)))
 
 def writeXML(basename, sxml):
     xmlname = ''.join(splitFixExt(basename, '.xml'))
     with open(xmlname, 'wt') as xf:
         xf.write(sxml)
-    pprint('XML written to {0}'.format(xmlname))
+    pprint('XML written to {0}'.format(path.abspath(xmlname)))
 
 def setMetas(args, root):
     meta = root.find('meta')
@@ -306,7 +306,7 @@ def main():
     if args.output:
         if args.inxml:
             xroot = ET.parse(args.inxml).getroot()
-            pprint('New XML read from {0}'.format(args.inxml))
+            pprint('New XML read from {0}'.format(path.abspath(args.inxml)))
         else:
             xroot = ET.fromstring(sxml)
 
