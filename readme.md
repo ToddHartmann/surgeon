@@ -48,7 +48,7 @@ tool.)
 
 -ix reads new XML from <b>INXML</b>, and will apply any changes before
 writing <b>OUTPUT</b>. You can use -x with -ix: -x will save the XML from
-<b>INPUT</b> in all cases.
+<b>INPUT</b> in all cases, even if it has errors.
 
 There are no checks on any values. Use at your own risk.
 </pre>

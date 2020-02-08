@@ -8,8 +8,8 @@ from itertools import product
 import os.path as path
 import xml.etree.ElementTree as ET
 
-#import sys
-#sys.tracebacklimit = None   # kludgey solution to uselessly long stack traces
+import sys
+sys.tracebacklimit = None   # kludgey solution to uselessly long stack traces
 
 def dprint(stringy):
     """Debug print"""
@@ -134,20 +134,22 @@ class WaveData(object, metaclass=metarom):
         self.pcm = view[WaveData.sizeWavHdr:]
 #
 def getparts(infile):
-    """Get the two or three parts of the patch file -
-       Leader leader, string XML, and maybe bytes wavetable"""
-    leader = sxml = wavey = None
+    """Get the three parts of the patch file -
+       Leader leader, bytes XML, and bytes wavetable (may be empty)"""
+
+    dprint('Attempting patch read from {0}'.format(path.abspath(infile)))
+    leader = bxml = wavey = None
     with open(infile, 'rb') as pf:
         leader = Leader(pf)
 
         pxsize = leader['xmlSize'] #leader.getXMLSize()
         bxml = pf.read(pxsize)      # XML as bytes
-        sxml = bxml.decode('UTF-8') # XML as str()
+#        sxml = bxml.decode('UTF-8', 'surrogateescape') # XML as str()
         dprint('End of XML: 0x{:04X}'.format(pf.tell()))
 
         wavey = pf.read()    # anything else, if any
     pprint('Patch read from {0}'.format(path.abspath(infile)))
-    return leader, sxml, wavey
+    return leader, bxml, wavey
 #
 def splitFixExt(basename, desired):
     root, extn = path.splitext(basename)
@@ -156,7 +158,11 @@ def splitFixExt(basename, desired):
     return root, extn
 #
 def writeparts(basename, leader, newxml, wavey):
+    """Write the three parts to a file -
+       string file name, bytes leader, bytes newxml, bytes wavey"""
+
     outfile = ''.join(splitFixExt(basename, '.fxp'))
+    dprint('Attempting patch write to {0}'.format(path.abspath(outfile)))
     with open(outfile, 'wb') as nf:
         nf.write(leader)
         nf.write(newxml)
@@ -193,14 +199,17 @@ def writeAllWavs(basename, leader, wavey):
             surged = Surger(bio, sizwav)  # make a new one since bio is non-insertable
 
             wavname = '{}-{}-{}x{}{}'.format(root, oscNames[osc], numwav, sizwav, extn)
+            dprint('Attempting wavetable write to {0}'.format(path.abspath(wavname)))
             with open(wavname, 'wb') as f:
                 f.write(surged)
             pprint('Wavetable written to {0}'.format(path.abspath(wavname)))
 
-def writeXML(basename, sxml):
+def writeXML(basename, bxml):
+    """string file name, bytes xml"""
     xmlname = ''.join(splitFixExt(basename, '.xml'))
-    with open(xmlname, 'wt') as xf:
-        xf.write(sxml)
+    dprint('Attempting XML write to {0}'.format(path.abspath(xmlname)))
+    with open(xmlname, 'wb') as xf:
+        xf.write(bxml)
     pprint('XML written to {0}'.format(path.abspath(xmlname)))
 
 def setMetas(args, root):
@@ -254,9 +263,10 @@ def parseArgs():
                or LABEL unmodified.  (This means you cannot set LABEL
                to 'None' with this tool.)""",
             """-ix reads new XML from INXML, and will apply any changes before writing OUTPUT.
-               You can use -x with -ix: -x will save the XML from INPUT in all cases.""",
+               You can use -x with -ix: -x will save the XML from INPUT in all cases,
+               even if it has errors.""",
                """There are no checks on any values.  Use at your own risk."""]]),
-        formatter_class=argparse.RawTextHelpFormatter #RawDescriptionHelpFormatter
+        formatter_class=argparse.RawTextHelpFormatter
     )
 
     parser.add_argument('input', metavar='INPUT', help='input patch file name')
@@ -278,7 +288,7 @@ def parseArgs():
 def main():
     args = parseArgs()
 
-    leader, sxml, wavey = getparts(args.input)
+    leader, bxml, wavey = getparts(args.input)
     pname = leader['prgName']
     ez = pname.find(b'\x00')    # end zero (-1 if not found)
     pprint('Leader prgName is {0}'.format(pname[:ez])) #.decode()))
@@ -287,11 +297,11 @@ def main():
     if args.xml:
         if True == args.xml:                # -x with no name
             if args.output:                 # try output name
-                writeXML(args.output, sxml)
+                writeXML(args.output, bxml)
             else:
-                writeXML(args.input, sxml)  # since input is required
+                writeXML(args.input, bxml)  # since input is required
         else:                               # -x filename
-            writeXML(args.xml, sxml)
+            writeXML(args.xml, bxml)
 
     # -w only = 'const'=bool, no -w = 'default'=None, -w whatevs = whatevs
     if args.wav:
@@ -303,11 +313,13 @@ def main():
         else:
             writeAllWavs(args.wav, leader, wavey)     # -w filename
 
+    xroot = None
     if args.output:
         if args.inxml:
             xroot = ET.parse(args.inxml).getroot()
             pprint('New XML read from {0}'.format(path.abspath(args.inxml)))
         else:
+            sxml = bxml.decode('UTF-8', 'ignore') # XML as str()
             xroot = ET.fromstring(sxml)
 
         setMetas(args, xroot)
@@ -322,13 +334,13 @@ def main():
         with io.BytesIO() as newxml:
             tree = ET.ElementTree(xroot)
             tree.write(newxml)
-            bxml = newxml.getvalue()    # get it as bytes()
-            xmlSize = len(bxml)
+            nbxml = newxml.getvalue()    # get it as bytes()
+            xmlSize = len(nbxml)
 
             leader['xmlSize'] = xmlSize
             leader['chunkSize'] = xmlSize + len(wavey) + Leader.sub3size
 
-            writeparts(args.output, leader.bytes(), bxml, wavey)
+            writeparts(args.output, leader.bytes(), nbxml, wavey)
 
 if __name__ == '__main__':
     main()
