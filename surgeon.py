@@ -226,12 +226,12 @@ def setAttrib(xroot, pname, aname, value):
     if param != None:
         if value == 'True':
             param.set(aname, '1')
-        elif value == 'False':
+        elif value == 'False' and aname != 'value':     # don't delete 'value' attributes
             param.attrib.pop(aname, None)
         else:
             param.set(aname, value)
 
-        if value == 'False':
+        if value == 'False' and aname != 'value':
             pprint('Removed attribute {0} of parameter {1}'.format(aname, param.tag))
         else:
             if aname == 'value':
@@ -273,13 +273,15 @@ def parseArgs():
         ),
         epilog = '\n\n'.join( [fillit(s) for s in [
             """If OUTPUT equals INPUT, it will *overwrite* INPUT.""",
-            """All OUTPUT from -o will have slightly altered XML.  -x
-               will save unaltered XML from the INPUT file.""",
+            """All OUTPUT from -o will have slightly altered XML, and certain errors
+               will be silently ignored.  -x will save unaltered XML from the INPUT file.""",
             """-x and -w used without file names will base them on OUTPUT, if
                present, INPUT otherwise.""",
             """-w adds the Surge metadata chunk, so the .WAV can be dragged
                in to Surge or a user wavetable directory.""",
-            """-p and -cc may be used multiple times.""",
+            """-p, -t and -cc may be used multiple times.""",
+            """-p and -t will replace a VALUE of 'True' with '1' as Surge expects.
+               Upon a VALUE of 'False', -t will *remove* the attribute as Surge expects.""",
             """With -cc, use 'None' (without quotes) to leave BIPOLAR, VALUE,
                or LABEL unmodified.  (This means you cannot set LABEL
                to 'None' with this tool.)""",
@@ -301,7 +303,7 @@ def parseArgs():
     parser.add_argument('-w',  '--wav', metavar='OUTWAV', nargs='?', const=True, default=None, help='beginning for names of .WAV files\n ')
     parser.add_argument('-p',  '--param', action='append', nargs=2, metavar=('NAME', 'VALUE'),help='set NAMEd parameter to VALUE\n ')
     parser.add_argument('-t',  '--attrib', action = 'append', nargs=3, \
-        metavar=('PARAM', 'ATTRIB', 'VALUE'), help='set ATTRIB of PARAM to VALUE\n ')
+        metavar=('PARAM', 'ATTRIB', 'VALUE'), help='set ATTRIBute of PARAMeter to VALUE\n ')
     parser.add_argument('-cc', '--control', action='append', nargs=4, \
         metavar=('INDEX', 'BIPOLAR', 'VALUE', 'LABEL'),help="set INDEXed controller's state")
     args = parser.parse_args()
