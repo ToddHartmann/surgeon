@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Todd wrote this for the Surge synth project and places it in the public domain.
-__version__ = '1.0.2'
+__version__ = '1.0.3'
 
 import io, argparse, wave, struct, chunk, textwrap
 from enum import Enum
@@ -144,7 +144,6 @@ def getparts(infile):
 
         pxsize = leader['xmlSize'] #leader.getXMLSize()
         bxml = pf.read(pxsize)      # XML as bytes
-#        sxml = bxml.decode('UTF-8', 'surrogateescape') # XML as str()
         dprint('End of XML: 0x{:04X}'.format(pf.tell()))
 
         wavey = pf.read()    # anything else, if any
@@ -219,15 +218,37 @@ def setMetas(args, root):
             meta.set(attr, args.__getattribute__(attr))
             pprint('Meta {0} set to {1}'.format(attr, meta.get(attr)))
 
+# <a_osc1_pitch type="2" value="0.000000" extend_range="1" absolute="1" />
+
+def setAttrib(xroot, pname, aname, value):
+    parameters = xroot.find('parameters')
+    param = parameters.find(pname)
+    if param != None:
+        if value == 'True':
+            param.set(aname, '1')
+        elif value == 'False':
+            param.attrib.pop(aname, None)
+        else:
+            param.set(aname, value)
+
+        if value == 'False':
+            pprint('Removed attribute {0} of parameter {1}'.format(aname, param.tag))
+        else:
+            if aname == 'value':
+                pprint('Parameter {0} set to {1}'.format(param.tag, param.get('value')))
+            else:
+                pprint('Attribute {0} of parameter {1} set to {2}'.format(aname, param.tag, param.get(aname)))
+
 def setParameters(args, xroot):
     if args.param:
-        parameters = xroot.find('parameters')
-        for name, value in args.param:
-            param = parameters.find(name)
-            if None != param:
-                param.set('value', value)
-                pprint('Parameter {0} set to {1}'.format(param.tag, param.get('value')))
+        for pname, value in args.param:
+            setAttrib(xroot, pname, 'value', value)
 
+def setAttributes(args, xroot):
+    if args.attrib:
+        for pname, aname, value in args.attrib:     # args.attrib is very different from param.attrib
+            setAttrib(xroot, pname, aname, value)
+#
 def setControllers(args, xroot):
     if args.control:
         controllers = xroot.find('customcontroller')
@@ -279,6 +300,8 @@ def parseArgs():
     parser.add_argument('-ix', '--inxml', metavar='INXML', help='read new XML from INXML\n ')
     parser.add_argument('-w',  '--wav', metavar='OUTWAV', nargs='?', const=True, default=None, help='beginning for names of .WAV files\n ')
     parser.add_argument('-p',  '--param', action='append', nargs=2, metavar=('NAME', 'VALUE'),help='set NAMEd parameter to VALUE\n ')
+    parser.add_argument('-t',  '--attrib', action = 'append', nargs=3, \
+        metavar=('PARAM', 'ATTRIB', 'VALUE'), help='set ATTRIB of PARAM to VALUE\n ')
     parser.add_argument('-cc', '--control', action='append', nargs=4, \
         metavar=('INDEX', 'BIPOLAR', 'VALUE', 'LABEL'),help="set INDEXed controller's state")
     args = parser.parse_args()
@@ -324,6 +347,7 @@ def main():
 
         setMetas(args, xroot)
         setParameters(args, xroot)
+        setAttributes(args, xroot)
         setControllers(args, xroot)
 
         if(args.name):
