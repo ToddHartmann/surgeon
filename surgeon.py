@@ -249,6 +249,24 @@ def setAttributes(args, xroot):
         for pname, aname, value in args.attrib:     # args.attrib is very different from param.attrib
             setAttrib(xroot, pname, aname, value)
 #
+def setRoutings(args, xroot):
+    if args.modroute:
+        for pname, source, depth in args.modroute:
+            param = xroot.find('/'.join(['parameters', pname]))
+            if param != None:
+                routing = param.find("modrouting[@source='{0}']".format(source))    # Highlander Rule?  (There can be only one routing w/ given source.)
+                if depth == 'None':             # delete the routing if it exists
+                    if routing != None:
+                        param.remove(routing)
+                        pprint('Removed mod route from source #{0} to {1}'.format(source, pname))
+                else:
+                    if routing == None:                                 # make a new one
+                        routing = ET.SubElement(param, 'modrouting', \
+                            {'source' : source, 'depth' : depth})
+                    else:
+                        routing.set('depth', depth)
+                    pprint('Set mod route from source #{0} to {1} with depth {2}'.format(source, pname, depth))
+#
 def setControllers(args, xroot):
     if args.control:
         controllers = xroot.find('customcontroller')
@@ -279,10 +297,11 @@ def parseArgs():
                present, INPUT otherwise.""",
             """-w adds the Surge metadata chunk, so the .WAV can be dragged
                in to Surge or a user wavetable directory.""",
-            """-p, -t and -cc may be used multiple times.""",
-            """-p and -t will replace a VALUE of 'True' with '1' as Surge expects.
-               Upon a VALUE of 'False', -t will *remove* the attribute as Surge expects.""",
-            """With -cc, use 'None' (without quotes) to leave BIPOLAR, VALUE,
+            """-p, -t, -m and -cc may be used multiple times.""",
+            """-p and -t will replace a VALUE of True with 1 as Surge expects.
+               Upon a VALUE of False, -t will *remove* the attribute as Surge expects.
+               Upon a DEPTH of None, -m will *remove* the routing.""",
+            """With -cc, use None to leave BIPOLAR, VALUE,
                or LABEL unmodified.  (This means you cannot set LABEL
                to 'None' with this tool.)""",
             """-ix reads new XML from INXML, and will apply any changes before writing OUTPUT.
@@ -304,6 +323,8 @@ def parseArgs():
     parser.add_argument('-p',  '--param', action='append', nargs=2, metavar=('NAME', 'VALUE'),help='set NAMEd parameter to VALUE\n ')
     parser.add_argument('-t',  '--attrib', action = 'append', nargs=3, \
         metavar=('PARAM', 'ATTRIB', 'VALUE'), help='set ATTRIBute of PARAMeter to VALUE\n ')
+    parser.add_argument('-m',  '--modroute', action='append', nargs=3, \
+        metavar=('PARAM', 'SOURCE', 'DEPTH'), help='add or remove (DEPTH=None) modulation routing\n ')
     parser.add_argument('-cc', '--control', action='append', nargs=4, \
         metavar=('INDEX', 'BIPOLAR', 'VALUE', 'LABEL'),help="set INDEXed controller's state")
     args = parser.parse_args()
@@ -350,6 +371,7 @@ def main():
         setMetas(args, xroot)
         setParameters(args, xroot)
         setAttributes(args, xroot)
+        setRoutings(args, xroot)
         setControllers(args, xroot)
 
         if(args.name):
