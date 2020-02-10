@@ -286,9 +286,29 @@ def setControllers(args, xroot):
 #   <sequence scene="0" i="0" s0="0.489583" s1="0.489583" s2="0.427083" s3="0.343750" s4="0.343750" s5="0.343750" s6="0.343750" s7="0.343750" s8="0.343750" s9="0.343750" s10="0.385417" s11="0.385417" s12="0.385417" s13="0.385417" s14="0.385417"
 #    s15="0.447917" loop_start="0" loop_end="15" shuffle="0.000000" trigmask="4369" />
 # </stepsequences>
-def getSequence(xroot, scene, index):
-    sequence = xroot.find("stepsequences/sequence[@scene='{0}'][@i='{1}']".format(scene, index))
-    return sequence
+#
+def setSeqAttrib(xroot, scene, index, aname, avalue):
+    stepseqs = xroot.find('stepsequences')
+    seq = stepseqs.find("sequence[@scene='{0}'][@i='{1}']".format(scene, index))
+
+    if seq == None:                             # did not find <sequence>
+        tribs = { 'scene':scene, 'i':index,
+                    'loop_start':'0', 'loop_end':'15', 'shuffle':'0.000000'}
+        if index == '0':
+            tribs['trigmask'] = '0'
+        seq = ET.SubElement(stepseqs, 'sequence', tribs)    # make sequence
+        pprint('Created sequence at index {0} in scene {1}'.format(index, scene))
+
+    if aname == 'None':     # delete the sequence
+        stepseqs.remove(seq)
+        pprint('Removed sequence at index {0} in scene {1}'.format(index, scene))
+    else:
+        if avalue == 'None':
+            seq.attrib.pop(aname, None)
+            pprint('Removed attribute {0} in sequence at index {1} in scene {2}'.format(aname, index, scene))
+        else:
+            seq.set(aname, avalue)
+            pprint('Set attribute {0} to {1} in sequence at index {2} in scene {3}'.format(aname, avalue, index, scene))
 #
 # -x only = 'const'=bool, no -x = 'default'=None, -x whatevs = whatevs
 def pickName(argh, inFile, outFile):
@@ -379,8 +399,9 @@ def main():
             sxml = bxml.decode('UTF-8', 'ignore') # XML as str()
             xroot = ET.fromstring(sxml)
 
-
-        seq = getSequence(xroot, 0, 0)
+        setSeqAttrib(xroot, '1', '5', 'doofus', 'goober')
+        setSeqAttrib(xroot, '0', '5', 'doofus', 'None')
+        setSeqAttrib(xroot, '0', '5', 'None', 'None')
 
         setMetas(args, xroot)
         setParameters(args, xroot)
