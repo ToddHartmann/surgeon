@@ -282,6 +282,22 @@ def setControllers(args, xroot):
                     pprint('Controller {0} bipolar={1} v={2} label={3}'.format( \
                         entry.get('i'), entry.get('bipolar'), entry.get('v'), entry.get('label')))
 #
+# -x only = 'const'=bool, no -x = 'default'=None, -x whatevs = whatevs
+def pickName(argh, inFile, outFile):
+    """prefer outFile to inFile, and argh to both"""
+    answer = inFile                 # because it is required
+    if argh:                        # argh is bool(True) or string whatevs
+        if argh == True:            # -x with no name given
+            if outFile:
+                answer = outFile
+        else:                       # -x with name given
+            answer = argh           # so use it
+    else:                           # argh is None
+        if outFile:                 # prefer outFile if given
+            answer = outFile
+
+    return answer
+#
 def fillit(s): return textwrap.fill(' '.join(s.split()))
 
 def parseArgs():
@@ -330,7 +346,7 @@ def parseArgs():
     args = parser.parse_args()
     dprint(args)
     return args
-
+#
 def main():
     args = parseArgs()
 
@@ -339,28 +355,15 @@ def main():
     ez = pname.find(b'\x00')    # end zero (-1 if not found)
     pprint('Leader prgName is {0}'.format(pname[:ez])) #.decode()))
 
-    # -x only = 'const'=bool, no -x = 'default'=None, -x whatevs = whatevs
     if args.xml:
-        if True == args.xml:                # -x with no name
-            if args.output:                 # try output name
-                writeXML(args.output, bxml)
-            else:
-                writeXML(args.input, bxml)  # since input is required
-        else:                               # -x filename
-            writeXML(args.xml, bxml)
+        writeXML(pickName(args.xml, args.input, args.output), bxml)
 
-    # -w only = 'const'=bool, no -w = 'default'=None, -w whatevs = whatevs
     if args.wav:
-        if True == args.wav:                    # -w with no name
-            if args.output:                     # try output name
-                writeAllWavs(args.output, leader, wavey)
-            else:
-                writeAllWavs(args.input, leader, wavey)      # since input is required
-        else:
-            writeAllWavs(args.wav, leader, wavey)     # -w filename
+        baseName = pickName(args.wav, args.input, args.output)
+        writeAllWavs(baseName, leader, wavey)
 
-    xroot = None
     if args.output:
+        xroot = None
         if args.inxml:
             xroot = ET.parse(args.inxml).getroot()
             pprint('New XML read from {0}'.format(path.abspath(args.inxml)))
