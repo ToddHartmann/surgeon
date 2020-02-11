@@ -10,11 +10,11 @@ You can edit extracted XML with [XML Notepad](https://github.com/microsoft/xmlno
 or [QXmlEdit](https://github.com/lbellonda/qxmledit) (cross-platform).
 
 ## Example
-<pre>surgeon -o seq.fxp "Init Saw.fxp" -m a_osc1_pitch 17 7.0 -p a_lfo0_shape 7 -s A 0 s1 0.25 -s A 0 s3 -0.25 -s A 0 loop_end 3</pre>
+<pre>surgeon -o seq.fxp "Init Saw.fxp" -m a_osc1_pitch lfo1 7.0 -p a_lfo0_shape 7 -s A 0 s1 0.25 -s A 0 s3 -0.25 -s A 0 loop_end 3</pre>
 
 Starting with a copy of "Init Saw.fxp" and saving to "seq.fxp" the above does the following (all in Scene A):
 
-<pre>-m a_osc1_pitch 17 7.0</pre>Adds a modulation routing from voice LFO1 to OSC1's pitch with a depth of 7.0 (from center to top of range).
+<pre>-m a_osc1_pitch lfo1 7.0</pre>Adds a modulation routing from voice LFO1 to OSC1's pitch with a depth of 7.0 (from center to top of range).
 
 <pre>-p a_lfo0_shape 7</pre>Sets LFO1 to Step Seq.
 
@@ -22,36 +22,37 @@ Starting with a copy of "Init Saw.fxp" and saving to "seq.fxp" the above does th
 
 ## The Help
 <pre>
-surgeon.py [-h] [-o <b>OUTPUT</b>] [-n <b>NAME</b>] [-ca <b>CATEGORY</b>] [-co <b>COMMENT</b>]
-           [-a <b>AUTHOR</b>] [-x [<b>OUTXML</b>]] [-ix <b>INXML</b>] [-w [<b>OUTWAV</b>]]
-           [-p <b>NAME</b> <b>VALUE</b>] [-t <b>PARAM</b> <b>ATTRIB</b> <b>VALUE</b>]
-           [-m <b>PARAM</b> <b>SOURCE</b> <b>DEPTH</b>] [-s <b>SCENE</b> <b>INDEX</b> <b>ATTRIB</b> <b>VALUE</b>]
-           [-cc <b>INDEX</b> <b>BIPOLAR</b> <b>VALUE</b> <b>LABEL</b>]
-           <b>INPUT</b>
+usage: surgeon.py [-h] [-o <b>OUTPUT</b>] [-n <b>NAME</b>] [-ca <b>CATEGORY</b>] [-co <b>COMMENT</b>]
+                  [-a <b>AUTHOR</b>] [-x [<b>OUTXML</b>]] [-ix <b>INXML</b>] [-w [<b>OUTWAV</b>]]
+                  [-p <b>NAME</b> <b>VALUE</b>] [-t <b>PARAM</b> <b>ATTRIB</b> <b>VALUE</b>]
+                  [-m <b>PARAM</b> <b>SOURCE</b> <b>DEPTH</b>] [-s <b>SCENE</b> <b>INDEX</b> <b>ATTRIB</b> <b>VALUE</b>]
+                  [-cc <b>INDEX</b> <b>BIPOLAR</b> <b>VALUE</b> <b>LABEL</b>]
+                  <b>INPUT</b>
 
 Operate on Surge patch files, extract wavetables, export and import
 XML. Version 1.0.4.
 
   <b>INPUT</b>                                 input patch file name
   -h, --help                            show this help message and exit
-  -o  <b>OUTPUT</b>, --output <b>OUTPUT</b>           output patch file name
-  -n  <b>NAME</b>, --name <b>NAME</b>                 new name for patch
+  -o <b>OUTPUT</b>, --output <b>OUTPUT</b>            output patch file name
+  -n <b>NAME</b>, --name <b>NAME</b>                  new name for patch
   -ca <b>CATEGORY</b>, --category <b>CATEGORY</b>     new category for patch
   -co <b>COMMENT</b>, --comment <b>COMMENT</b>        new comment for patch
-  -a  <b>AUTHOR</b>, --author <b>AUTHOR</b>           new author for patch
-  -x  [<b>OUTXML</b>], --xml [<b>OUTXML</b>]          XML output file name
+  -a <b>AUTHOR</b>, --author <b>AUTHOR</b>            new author for patch
+  -x [<b>OUTXML</b>], --xml [<b>OUTXML</b>]           XML output file name
   -ix <b>INXML</b>, --inxml <b>INXML</b>              read new XML from <b>INXML</b>
-  -w  [<b>OUTWAV</b>], --wav [<b>OUTWAV</b>]          beginning for names of .WAV files
-  -p  <b>NAME</b> <b>VALUE</b>,
+  -w [<b>OUTWAV</b>], --wav [<b>OUTWAV</b>]           beginning for names of .WAV files
+  -p <b>NAME</b> <b>VALUE</b>,
   --param <b>NAME</b> <b>VALUE</b>                    set <b>NAME</b>d parameter to <b>VALUE</b>
-  -t  <b>PARAM</b> <b>ATTRIB</b> <b>VALUE</b>,
+  -t <b>PARAM</b> <b>ATTRIB</b> <b>VALUE</b>,
   --attrib <b>PARAM</b> <b>ATTRIB</b> <b>VALUE</b>           set <b>ATTRIB</b>ute of <b>PARAM</b>eter to <b>VALUE</b>
-  -m  <b>PARAM</b> <b>SOURCE</b> <b>DEPTH</b>,
-  --modroute <b>PARAM</b> <b>SOURCE</b> <b>DEPTH</b>         add or remove (<b>DEPTH</b>=None) modulation routing
-  -s  <b>SCENE</b> <b>INDEX</b> <b>ATTRIB</b> <b>VALUE</b>,
+  -m <b>PARAM</b> <b>SOURCE</b> <b>DEPTH</b>,
+  --modroute <b>PARAM</b> <b>SOURCE</b> <b>DEPTH</b>         add or remove modulation routing
+  -s <b>SCENE</b> <b>INDEX</b> <b>ATTRIB</b> <b>VALUE</b>,
   --sequence <b>SCENE</b> <b>INDEX</b> <b>ATTRIB</b> <b>VALUE</b>   set <b>ATTRIB</b>ute to <b>VALUE</b> in <b>INDEX</b>ed sequence in <b>SCENE</b>
   -cc <b>INDEX</b> <b>BIPOLAR</b> <b>VALUE</b> <b>LABEL</b>,
   --control <b>INDEX</b> <b>BIPOLAR</b> <b>VALUE</b> <b>LABEL</b>   set <b>INDEX</b>ed controller's state</pre>
+
 If <b>OUTPUT</b> equals <b>INPUT</b>, it will *overwrite* <b>INPUT</b>.
 
 All <b>OUTPUT</b> from -o will have slightly altered XML, and certain errors
@@ -73,6 +74,8 @@ expects.
 
 Upon a <b>DEPTH</b> of None, -m will *remove* the routing.
 
+Upon a <b>SOURCE</b> of None, -m will *remove all* routing from the <b>PARAM</b>.
+
 Upon a <b>VALUE</b> of None, -s will *remove* the attribute.
 
 Upon an <b>ATTRIB</b> of None, -s will *remove* the sequence.
@@ -83,5 +86,12 @@ means you cannot set <b>LABEL</b> to 'None' with this tool.)
 -ix reads new XML from <b>INXML</b>, and will apply any changes before
 writing <b>OUTPUT</b>. You can use -x with -ix: -x will save the XML from
 <b>INPUT</b> in all cases, even if it has errors.
+
+You can use these names for the <b>SOURCE</b> of -m:
+
+original, velocity, keytrack, polyaftertouch, aftertouch, pitchbend,
+modwheel, ctrl1, ctrl2, ctrl3, ctrl4, ctrl5, ctrl6, ctrl7, ctrl8,
+ampeg, filtereg, lfo1, lfo2, lfo3, lfo4, lfo5, lfo6, slfo1, slfo2,
+slfo3, slfo4, slfo5, slfo6, timbre, releasevelocity
 
 There are no checks on any values. Use at your own risk.
