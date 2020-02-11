@@ -372,17 +372,18 @@ def parseArgs():
         description =   fillit("""Operate on Surge patch files, extract wavetables,
                                   export and import XML.  Version {0}.""".format(__version__)
         ),
-        epilog = '\n\n'.join( [fillit(s) for s in [
+        epilog = '\n'.join( [fillit(s) for s in [
             """If OUTPUT equals INPUT, it will *overwrite* INPUT.""",
             """All OUTPUT from -o will have slightly altered XML, and certain errors
                will be silently ignored.  -x will save unaltered XML from the INPUT file.""",
+               '',
             """-x and -w used without file names will base them on OUTPUT, if
                present, INPUT otherwise.""",
             """-w adds the Surge metadata chunk, so the .WAV can be dragged
                in to Surge or a user wavetable directory.""",
             """-ix reads new XML from INXML, and will apply any changes before writing OUTPUT.
-               You can use -x with -ix: -x will save the XML from INPUT in all cases,
-               even if it has errors.""",
+               You can use -x with -ix.""",
+               '',
             """-p, -t, -m, -s and -cc may be used multiple times.""",
             """-p and -t will replace a VALUE of True with 1 as Surge expects.""",
             """Upon a VALUE of False, -t will *remove* the attribute as Surge expects.""",
@@ -393,28 +394,32 @@ def parseArgs():
             """With -cc, use None to leave BIPOLAR, VALUE,
                or LABEL unmodified.  (This means you cannot set LABEL
                to 'None' with this tool.)""",
+               '',
             """You can use these names for the SOURCE of -m:""",
             ', '.join(modSources),
+            '',
             """You can use these names for the INDEX of -s:""",
             ', '.join(lfos),
+            '',
             """You can use these names for the INDEX of -cc:""",
             ', '.join(cusCons),
+            '',
                """There are no checks on any values.  Use at your own risk."""]]),
         formatter_class=argparse.RawTextHelpFormatter
     )
 
     parser.add_argument('input', metavar='INPUT', help='input patch file name')
-    parser.add_argument('-o',  '--output', metavar='OUTPUT',  help='output patch file name\n ')
+    parser.add_argument('-o',  '--output', metavar='OUTPUT',  help='applies any changes and saves to OUTPUT\n ')
     parser.add_argument('-n',  '--name', metavar='NAME', help='new name for patch\n ')
     parser.add_argument('-ca', '--category', metavar='CATEGORY', help='new category for patch\n ')
     parser.add_argument('-co', '--comment', metavar='COMMENT', help='new comment for patch\n ')
     parser.add_argument('-a',  '--author', metavar='AUTHOR', help='new author for patch\n ')
-    parser.add_argument('-x',  '--xml', metavar='OUTXML', nargs='?', const=True, default=None, help='XML output file name\n ')
+    parser.add_argument('-x',  '--xml', metavar='OUTXML', nargs='?', const=True, default=None, help='save XML from INPUT to OUTXML\n ')
     parser.add_argument('-ix', '--inxml', metavar='INXML', help='read new XML from INXML\n ')
-    parser.add_argument('-w',  '--wav', metavar='OUTWAV', nargs='?', const=True, default=None, help='beginning for names of .WAV files\n ')
+    parser.add_argument('-w',  '--wav', metavar='OUTWAV', nargs='?', const=True, default=None, help='save waves\n ')
     parser.add_argument('-p',  '--param', action='append', nargs=2, metavar=('NAME', 'VALUE'),help='set NAMEd parameter to VALUE\n ')
     parser.add_argument('-t',  '--attrib', action = 'append', nargs=3, \
-        metavar=('NAME', 'ATTRIB', 'VALUE'), help='set ATTRIBute of NAMEd parameter\n ')
+        metavar=('NAME', 'ATTRIB', 'VALUE'), help='set ATTRIBute of NAMEd parameter to VALUE\n ')
     parser.add_argument('-m',  '--modroute', action='append', nargs=3, \
         metavar=('NAME', 'SOURCE', 'DEPTH'), help='set modulation routing for NAMEd parameter\n ')
     parser.add_argument('-s', '--sequence', action='append', nargs=4, \
