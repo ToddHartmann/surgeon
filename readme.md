@@ -10,11 +10,11 @@ You can edit extracted XML with [XML Notepad](https://github.com/microsoft/xmlno
 or [QXmlEdit](https://github.com/lbellonda/qxmledit) (cross-platform).
 
 ## Example
-<pre>surgeon -o seq.fxp "Init Saw.fxp" -m a_osc1_pitch lfo1 7.0 -p a_lfo0_shape 7 -s A 0 s1 0.25 -s A 0 s3 -0.25 -s A 0 loop_end 3</pre>
+<pre>surgeon -o seq.fxp "Init Saw.fxp" -m a_osc1_pitch lfo0 7.0 -p a_lfo0_shape 7 -s A lfo0 s1 0.25 -s A lfo0 s3 -0.25 -s A lfo0 loop_end 3</pre>
 
 Starting with a copy of "Init Saw.fxp" and saving to "seq.fxp" the above does the following (all in Scene A):
 
-<pre>-m a_osc1_pitch lfo1 7.0</pre>Adds a modulation routing from voice LFO1 to OSC1's pitch with a depth of 7.0 (from center to top of range).
+<pre>-m a_osc1_pitch lfo0 7.0</pre>Adds a modulation routing from voice LFO1 to OSC1's pitch with a depth of 7.0 (from center to top of range).
 
 <pre>-p a_lfo0_shape 7</pre>Sets LFO1 to Step Seq.
 

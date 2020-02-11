@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Todd wrote this for the Surge synth project and places it in the public domain.
-__version__ = '1.0.4'
+__version__ = '1.0.5'
 
 import io, argparse, wave, struct, chunk, textwrap
 import sys
@@ -254,15 +254,15 @@ modSources = ['original', 'velocity', 'keytrack', 'polyaftertouch',
               'aftertouch', 'pitchbend', 'modwheel',
               'ctrl1', 'ctrl2', 'ctrl3', 'ctrl4', 'ctrl5', 'ctrl6', 'ctrl7', 'ctrl8',
               'ampeg', 'filtereg',
-              'lfo1', 'lfo2', 'lfo3', 'lfo4', 'lfo5', 'lfo6',
-              'slfo1', 'slfo2', 'slfo3', 'slfo4', 'slfo5', 'slfo6',
+              'lfo0', 'lfo1', 'lfo2', 'lfo3', 'lfo4', 'lfo5',
+              'slfo0', 'slfo1', 'slfo2', 'slfo3', 'slfo4', 'slfo5',
               'timbre', 'releasevelocity']
 #
 def setRoutings(args, xroot):
     if args.modroute:
         for pname, source, depth in args.modroute:
-            if source in modSources:
-                source = str(modSources.index(source))
+            if source.lower() in modSources:
+                source = str(modSources.index(source.lower()))
             param = xroot.find('/'.join(['parameters', pname]))
             if param != None:
                 if source == None:  # remove all routing from this param
@@ -303,10 +303,18 @@ def setControllers(args, xroot):
 #    s15="0.447917" loop_start="0" loop_end="15" shuffle="0.000000" trigmask="4369" />
 # </stepsequences>
 #
+lfos = ['lfo0', 'lfo1', 'lfo2', 'lfo3', 'lfo4', 'lfo5',
+        'slfo0', 'slfo1', 'slfo2', 'slfo3', 'slfo4', 'slfo5' ]
+
 def setSeqAttrib(xroot, scene, index, aname, avalue):
-    scene = {'0':'0', '1':'1',
-             'A':'0', 'B':'1',
-             'a':'0', 'b':'1'}.get(scene, scene)
+    scene = {'A':'0', 'B':'1',
+             'a':'0', 'b':'1'}.get(scene, scene)    # turn A,B into numbers
+    scname = ['A', 'B'][int(scene)]                 # nice name for messages
+
+    if index.lower() in lfos:
+        index = str(lfos.index(index.lower()))   # oh gosh indexes galore
+    iname = lfos[int(index)]
+
     stepseqs = xroot.find('stepsequences')
     seq = stepseqs.find("sequence[@scene='{0}'][@i='{1}']".format(scene, index))
 
@@ -316,18 +324,18 @@ def setSeqAttrib(xroot, scene, index, aname, avalue):
         if index == '0':
             tribs['trigmask'] = '0'
         seq = ET.SubElement(stepseqs, 'sequence', tribs)    # make sequence
-        pprint('Created sequence at index {0} in scene {1}'.format(index, scene))
+        pprint('Created sequence for {0} in scene {1}'.format(iname, scname))
 
     if aname == 'None':     # delete the sequence
         stepseqs.remove(seq)
-        pprint('Removed sequence at index {0} in scene {1}'.format(index, scene))
+        pprint('Removed sequence for {0} in scene {1}'.format(iname, scname))
     else:
         if avalue == 'None':
             seq.attrib.pop(aname, None)
-            pprint('Removed attribute {0} in sequence at index {1} in scene {2}'.format(aname, index, scene))
+            pprint('Removed attribute {0} in sequence for {1} in scene {2}'.format(aname, iname, scname))
         else:
             seq.set(aname, avalue)
-            pprint('Set attribute {0} to {1} in sequence at index {2} in scene {3}'.format(aname, avalue, index, scene))
+            pprint('Set attribute {0} to {1} in sequence for {2} in scene {3}'.format(aname, avalue, iname, scname))
 #
 def setSequences(args, xroot):
     if args.sequence:
@@ -380,6 +388,8 @@ def parseArgs():
                even if it has errors.""",
             """You can use these names for the SOURCE of -m:""",
             ', '.join(modSources),
+            """You can use these names for the INDEX of -s:""",
+            ', '.join(lfos),
                """There are no checks on any values.  Use at your own risk."""]]),
         formatter_class=argparse.RawTextHelpFormatter
     )
