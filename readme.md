@@ -22,6 +22,9 @@ Starting with a copy of "Init Saw.fxp" and saving to "seq.fxp" the above does th
 
 ## The Help
 <pre>
+</pre>
+## The OLD Help
+<pre>
 usage: surgeon.py [-h] [-o <b>OUTPUT</b>] [-n <b>NAME</b>] [-ca <b>CATEGORY</b>] [-co <b>COMMENT</b>]
                   [-a <b>AUTHOR</b>] [-x [<b>OUTXML</b>]] [-ix <b>INXML</b>] [-w [<b>OUTWAV</b>]]
                   [-p <b>NAME</b> <b>VALUE</b>] [-t <b>PARAM</b> <b>ATTRIB</b> <b>VALUE</b>]

@@ -283,28 +283,35 @@ def setRoutings(args, xroot):
                             routing.set('depth', depth)
                         pprint('Set mod route from {0} to {1} with depth {2}'.format(modSources[int(source)], pname, depth))
 #
+def noneSet(e, n, v):
+    if v != 'None':
+        e.set(n, v)
+#
+cusCons = modSources[7:15]
+#
 def setControllers(args, xroot):
     if args.control:
-        controllers = xroot.find('customcontroller')
         for index, bipolar, value, label in args.control:
-            for entry in controllers.findall('entry'):
-                if entry.get('i') == index:
-                    if 'None' != bipolar:
-                        entry.set('bipolar', bipolar)
-                    if 'None' != value:
-                        entry.set('v', value)
-                    if 'None' != label:
-                        entry.set('label', label)
-                    pprint('Controller {0} bipolar={1} v={2} label={3}'.format( \
-                        entry.get('i'), entry.get('bipolar'), entry.get('v'), entry.get('label')))
+            if index.lower() in cusCons:
+                index = str(cusCons.index(index.lower()))   # oh gosh indexes galore
+            iname = cusCons[int(index)]
+            bipolar = {'False':'0', 'True':'1'}.get(bipolar, bipolar)
+
+            entry = xroot.find("customcontroller/entry[@i='{0}']".format(index))
+            noneSet(entry, 'bipolar', bipolar)
+            noneSet(entry, 'v', value)
+            noneSet(entry, 'label', label)
+
+            bipname = ['False', 'True'][int(entry.get('bipolar'))]       # nice name for message
+            pprint('Controller {0} bipolar={1} v={2} label={3}'.format( \
+                iname, bipname, entry.get('v'), entry.get('label')))
 #
 # <stepsequences>
 #   <sequence scene="0" i="0" s0="0.489583" s1="0.489583" s2="0.427083" s3="0.343750" s4="0.343750" s5="0.343750" s6="0.343750" s7="0.343750" s8="0.343750" s9="0.343750" s10="0.385417" s11="0.385417" s12="0.385417" s13="0.385417" s14="0.385417"
 #    s15="0.447917" loop_start="0" loop_end="15" shuffle="0.000000" trigmask="4369" />
 # </stepsequences>
 #
-lfos = ['lfo0', 'lfo1', 'lfo2', 'lfo3', 'lfo4', 'lfo5',
-        'slfo0', 'slfo1', 'slfo2', 'slfo3', 'slfo4', 'slfo5' ]
+lfos = modSources[17:29]
 
 def setSeqAttrib(xroot, scene, index, aname, avalue):
     scene = {'A':'0', 'B':'1',
@@ -373,23 +380,25 @@ def parseArgs():
                present, INPUT otherwise.""",
             """-w adds the Surge metadata chunk, so the .WAV can be dragged
                in to Surge or a user wavetable directory.""",
+            """-ix reads new XML from INXML, and will apply any changes before writing OUTPUT.
+               You can use -x with -ix: -x will save the XML from INPUT in all cases,
+               even if it has errors.""",
             """-p, -t, -m, -s and -cc may be used multiple times.""",
             """-p and -t will replace a VALUE of True with 1 as Surge expects.""",
             """Upon a VALUE of False, -t will *remove* the attribute as Surge expects.""",
             """Upon a DEPTH of None, -m will *remove* the routing.""",
-            """Upon a SOURCE of None, -m will *remove all* routing from the PARAM.""",
+            """Upon a SOURCE of None, -m will *remove all* routing from the parameter.""",
             """Upon a VALUE of None, -s will *remove* the attribute.""",
             """Upon an ATTRIB of None, -s will *remove* the sequence.""",
             """With -cc, use None to leave BIPOLAR, VALUE,
                or LABEL unmodified.  (This means you cannot set LABEL
                to 'None' with this tool.)""",
-            """-ix reads new XML from INXML, and will apply any changes before writing OUTPUT.
-               You can use -x with -ix: -x will save the XML from INPUT in all cases,
-               even if it has errors.""",
             """You can use these names for the SOURCE of -m:""",
             ', '.join(modSources),
             """You can use these names for the INDEX of -s:""",
             ', '.join(lfos),
+            """You can use these names for the INDEX of -cc:""",
+            ', '.join(cusCons),
                """There are no checks on any values.  Use at your own risk."""]]),
         formatter_class=argparse.RawTextHelpFormatter
     )
@@ -405,11 +414,11 @@ def parseArgs():
     parser.add_argument('-w',  '--wav', metavar='OUTWAV', nargs='?', const=True, default=None, help='beginning for names of .WAV files\n ')
     parser.add_argument('-p',  '--param', action='append', nargs=2, metavar=('NAME', 'VALUE'),help='set NAMEd parameter to VALUE\n ')
     parser.add_argument('-t',  '--attrib', action = 'append', nargs=3, \
-        metavar=('PARAM', 'ATTRIB', 'VALUE'), help='set ATTRIBute of PARAMeter to VALUE\n ')
+        metavar=('NAME', 'ATTRIB', 'VALUE'), help='set ATTRIBute of NAMEd parameter\n ')
     parser.add_argument('-m',  '--modroute', action='append', nargs=3, \
-        metavar=('PARAM', 'SOURCE', 'DEPTH'), help='add or remove modulation routing\n ')
+        metavar=('NAME', 'SOURCE', 'DEPTH'), help='set modulation routing for NAMEd parameter\n ')
     parser.add_argument('-s', '--sequence', action='append', nargs=4, \
-        metavar=('SCENE', 'INDEX', 'ATTRIB', 'VALUE'),help="set ATTRIBute to VALUE in INDEXed sequence in SCENE")
+        metavar=('SCENE', 'INDEX', 'ATTRIB', 'VALUE'),help="set ATTRIBute of sequence")
     parser.add_argument('-cc', '--control', action='append', nargs=4, \
         metavar=('INDEX', 'BIPOLAR', 'VALUE', 'LABEL'),help="set INDEXed controller's state")
     args = parser.parse_args()
