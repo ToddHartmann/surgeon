@@ -3,12 +3,12 @@
 __version__ = '1.0.4'
 
 import io, argparse, wave, struct, chunk, textwrap
+import sys
 from enum import Enum
 from itertools import product
 import os.path as path
 import xml.etree.ElementTree as ET
 
-import sys
 sys.tracebacklimit = None   # kludgey solution to uselessly long stack traces
 
 def dprint(stringy):
@@ -265,18 +265,23 @@ def setRoutings(args, xroot):
                 source = str(modSources.index(source))
             param = xroot.find('/'.join(['parameters', pname]))
             if param != None:
-                routing = param.find("modrouting[@source='{0}']".format(source))    # Highlander Rule?  (There can be only one routing w/ given source.)
-                if depth == 'None':             # delete the routing if it exists
-                    if routing != None:
+                if source == None:  # remove all routing from this param
+                    for routing in param.findall('modrouting'):
                         param.remove(routing)
-                        pprint('Removed mod route from {0} to {1}'.format(modSources[int(source)], pname))
+                    pprint('Removed all mod routing for parameter {0}'.format(pname))
                 else:
-                    if routing == None:                                 # make a new one
-                        routing = ET.SubElement(param, 'modrouting', \
-                            {'source' : source, 'depth' : depth})
+                    routing = param.find("modrouting[@source='{0}']".format(source))    # Highlander Rule?  (There can be only one routing w/ given source.)
+                    if depth == 'None':             # delete the routing if it exists
+                        if routing != None:
+                            param.remove(routing)
+                            pprint('Removed mod route from {0} to {1}'.format(modSources[int(source)], pname))
                     else:
-                        routing.set('depth', depth)
-                    pprint('Set mod route from {0} to {1} with depth {2}'.format(modSources[int(source)], pname, depth))
+                        if routing == None:                                 # make a new one
+                            routing = ET.SubElement(param, 'modrouting', \
+                                {'source' : source, 'depth' : depth})
+                        else:
+                            routing.set('depth', depth)
+                        pprint('Set mod route from {0} to {1} with depth {2}'.format(modSources[int(source)], pname, depth))
 #
 def setControllers(args, xroot):
     if args.control:
@@ -364,6 +369,7 @@ def parseArgs():
             """-p and -t will replace a VALUE of True with 1 as Surge expects.""",
             """Upon a VALUE of False, -t will *remove* the attribute as Surge expects.""",
             """Upon a DEPTH of None, -m will *remove* the routing.""",
+            """Upon a SOURCE of None, -m will *remove all* routing from the PARAM.""",
             """Upon a VALUE of None, -s will *remove* the attribute.""",
             """Upon an ATTRIB of None, -s will *remove* the sequence.""",
             """With -cc, use None to leave BIPOLAR, VALUE,
@@ -372,6 +378,8 @@ def parseArgs():
             """-ix reads new XML from INXML, and will apply any changes before writing OUTPUT.
                You can use -x with -ix: -x will save the XML from INPUT in all cases,
                even if it has errors.""",
+            """You can use these names for the SOURCE of -m:""",
+            ', '.join(modSources),
                """There are no checks on any values.  Use at your own risk."""]]),
         formatter_class=argparse.RawTextHelpFormatter
     )
@@ -389,7 +397,7 @@ def parseArgs():
     parser.add_argument('-t',  '--attrib', action = 'append', nargs=3, \
         metavar=('PARAM', 'ATTRIB', 'VALUE'), help='set ATTRIBute of PARAMeter to VALUE\n ')
     parser.add_argument('-m',  '--modroute', action='append', nargs=3, \
-        metavar=('PARAM', 'SOURCE', 'DEPTH'), help='add or remove (DEPTH=None) modulation routing\n ')
+        metavar=('PARAM', 'SOURCE', 'DEPTH'), help='add or remove modulation routing\n ')
     parser.add_argument('-s', '--sequence', action='append', nargs=4, \
         metavar=('SCENE', 'INDEX', 'ATTRIB', 'VALUE'),help="set ATTRIBute to VALUE in INDEXed sequence in SCENE")
     parser.add_argument('-cc', '--control', action='append', nargs=4, \
