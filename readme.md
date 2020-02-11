@@ -85,18 +85,18 @@ means you cannot set <b>LABEL</b> to 'None' with this tool.)
 
 You can use these names for the <b>SOURCE</b> of -m:
 
-original, velocity, keytrack, polyaftertouch, aftertouch, pitchbend,
+>original, velocity, keytrack, polyaftertouch, aftertouch, pitchbend,
 modwheel, ctrl1, ctrl2, ctrl3, ctrl4, ctrl5, ctrl6, ctrl7, ctrl8,
 ampeg, filtereg, lfo0, lfo1, lfo2, lfo3, lfo4, lfo5, slfo0, slfo1,
 slfo2, slfo3, slfo4, slfo5, timbre, releasevelocity
 
 You can use these names for the <b>INDEX</b> of -s:
 
-lfo0, lfo1, lfo2, lfo3, lfo4, lfo5, slfo0, slfo1, slfo2, slfo3, slfo4,
+>lfo0, lfo1, lfo2, lfo3, lfo4, lfo5, slfo0, slfo1, slfo2, slfo3, slfo4,
 slfo5
 
 You can use these names for the <b>INDEX</b> of -cc:
 
-ctrl1, ctrl2, ctrl3, ctrl4, ctrl5, ctrl6, ctrl7, ctrl8
+>ctrl1, ctrl2, ctrl3, ctrl4, ctrl5, ctrl6, ctrl7, ctrl8
 
 There are no checks on any values. Use at your own risk.
