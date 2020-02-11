@@ -249,23 +249,34 @@ def setAttributes(args, xroot):
         for pname, aname, value in args.attrib:     # args.attrib is very different from param.attrib
             setAttrib(xroot, pname, aname, value)
 #
+# From ModulationSource.h
+modSources = ['original', 'velocity', 'keytrack', 'polyaftertouch',
+              'aftertouch', 'pitchbend', 'modwheel',
+              'ctrl1', 'ctrl2', 'ctrl3', 'ctrl4', 'ctrl5', 'ctrl6', 'ctrl7', 'ctrl8',
+              'ampeg', 'filtereg',
+              'lfo1', 'lfo2', 'lfo3', 'lfo4', 'lfo5', 'lfo6',
+              'slfo1', 'slfo2', 'slfo3', 'slfo4', 'slfo5', 'slfo6',
+              'timbre', 'releasevelocity']
+#
 def setRoutings(args, xroot):
     if args.modroute:
         for pname, source, depth in args.modroute:
+            if source in modSources:
+                source = str(modSources.index(source))
             param = xroot.find('/'.join(['parameters', pname]))
             if param != None:
                 routing = param.find("modrouting[@source='{0}']".format(source))    # Highlander Rule?  (There can be only one routing w/ given source.)
                 if depth == 'None':             # delete the routing if it exists
                     if routing != None:
                         param.remove(routing)
-                        pprint('Removed mod route from source #{0} to {1}'.format(source, pname))
+                        pprint('Removed mod route from {0} to {1}'.format(modSources[int(source)], pname))
                 else:
                     if routing == None:                                 # make a new one
                         routing = ET.SubElement(param, 'modrouting', \
                             {'source' : source, 'depth' : depth})
                     else:
                         routing.set('depth', depth)
-                    pprint('Set mod route from source #{0} to {1} with depth {2}'.format(source, pname, depth))
+                    pprint('Set mod route from {0} to {1} with depth {2}'.format(modSources[int(source)], pname, depth))
 #
 def setControllers(args, xroot):
     if args.control:
