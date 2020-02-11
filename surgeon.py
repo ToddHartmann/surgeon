@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Todd wrote this for the Surge synth project and places it in the public domain.
-__version__ = '1.0.3'
+__version__ = '1.0.4'
 
 import io, argparse, wave, struct, chunk, textwrap
 from enum import Enum
@@ -288,6 +288,9 @@ def setControllers(args, xroot):
 # </stepsequences>
 #
 def setSeqAttrib(xroot, scene, index, aname, avalue):
+    scene = {'0':'0', '1':'1',
+             'A':'0', 'B':'1',
+             'a':'0', 'b':'1'}.get(scene, scene)
     stepseqs = xroot.find('stepsequences')
     seq = stepseqs.find("sequence[@scene='{0}'][@i='{1}']".format(scene, index))
 
@@ -309,6 +312,11 @@ def setSeqAttrib(xroot, scene, index, aname, avalue):
         else:
             seq.set(aname, avalue)
             pprint('Set attribute {0} to {1} in sequence at index {2} in scene {3}'.format(aname, avalue, index, scene))
+#
+def setSequences(args, xroot):
+    if args.sequence:
+        for scene, index, aname, avalue in args.sequence:
+            setSeqAttrib(xroot, scene, index, aname, avalue)
 #
 # -x only = 'const'=bool, no -x = 'default'=None, -x whatevs = whatevs
 def pickName(argh, inFile, outFile):
@@ -341,10 +349,12 @@ def parseArgs():
                present, INPUT otherwise.""",
             """-w adds the Surge metadata chunk, so the .WAV can be dragged
                in to Surge or a user wavetable directory.""",
-            """-p, -t, -m and -cc may be used multiple times.""",
-            """-p and -t will replace a VALUE of True with 1 as Surge expects.
-               Upon a VALUE of False, -t will *remove* the attribute as Surge expects.
-               Upon a DEPTH of None, -m will *remove* the routing.""",
+            """-p, -t, -m, -s and -cc may be used multiple times.""",
+            """-p and -t will replace a VALUE of True with 1 as Surge expects.""",
+            """Upon a VALUE of False, -t will *remove* the attribute as Surge expects.""",
+            """Upon a DEPTH of None, -m will *remove* the routing.""",
+            """Upon a VALUE of None, -s will *remove* the attribute.""",
+            """Upon an ATTRIB of None, -s will *remove* the sequence.""",
             """With -cc, use None to leave BIPOLAR, VALUE,
                or LABEL unmodified.  (This means you cannot set LABEL
                to 'None' with this tool.)""",
@@ -369,6 +379,8 @@ def parseArgs():
         metavar=('PARAM', 'ATTRIB', 'VALUE'), help='set ATTRIBute of PARAMeter to VALUE\n ')
     parser.add_argument('-m',  '--modroute', action='append', nargs=3, \
         metavar=('PARAM', 'SOURCE', 'DEPTH'), help='add or remove (DEPTH=None) modulation routing\n ')
+    parser.add_argument('-s', '--sequence', action='append', nargs=4, \
+        metavar=('SCENE', 'INDEX', 'ATTRIB', 'VALUE'),help="set ATTRIBute to VALUE in INDEXed sequence in SCENE")
     parser.add_argument('-cc', '--control', action='append', nargs=4, \
         metavar=('INDEX', 'BIPOLAR', 'VALUE', 'LABEL'),help="set INDEXed controller's state")
     args = parser.parse_args()
@@ -399,14 +411,11 @@ def main():
             sxml = bxml.decode('UTF-8', 'ignore') # XML as str()
             xroot = ET.fromstring(sxml)
 
-        setSeqAttrib(xroot, '1', '5', 'doofus', 'goober')
-        setSeqAttrib(xroot, '0', '5', 'doofus', 'None')
-        setSeqAttrib(xroot, '0', '5', 'None', 'None')
-
         setMetas(args, xroot)
         setParameters(args, xroot)
         setAttributes(args, xroot)
         setRoutings(args, xroot)
+        setSequences(args, xroot)
         setControllers(args, xroot)
 
         if(args.name):
