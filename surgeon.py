@@ -223,7 +223,9 @@ def setMetas(args, root):
 def setAttrib(xroot, pname, aname, value):
     parameters = xroot.find('parameters')
     param = parameters.find(pname)
-    if param != None:
+    if param == None:
+        param = ET.SubElement(parameters, pname, {aname : value})
+    else:
         if value == 'True':
             param.set(aname, '1')
         elif value == 'False' and aname != 'value':     # don't delete 'value' attributes
@@ -386,10 +388,11 @@ def parseArgs():
                '',
             """-p, -t, -m, -s and -cc may be used multiple times.""",
             """-p and -t will replace a VALUE of True with 1 as Surge expects.""",
-            """Upon a VALUE of False, -t will *remove* the attribute as Surge expects.""",
+            """Upon a VALUE of False, -t will *remove* the attribute as Surge expects.
+               If you need an attribute to be False, set it to 0.""",
             """Upon a DEPTH of None, -m will *remove* the routing.""",
             """Upon a SOURCE of None, -m will *remove all* routing from the parameter.""",
-            """Upon a VALUE of None, -s will *remove* the attribute.""",
+            """Upon a VALUE of None, -s will *remove* the ATTRIBute of the sequence.""",
             """Upon an ATTRIB of None, -s will *remove* the sequence.""",
             """With -cc, use None to leave BIPOLAR, VALUE,
                or LABEL unmodified.  (This means you cannot set LABEL
