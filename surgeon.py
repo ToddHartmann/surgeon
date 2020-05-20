@@ -267,7 +267,7 @@ def setRoutings(args, xroot):
                 source = str(modSources.index(source.lower()))
             param = xroot.find('/'.join(['parameters', pname]))
             if param != None:
-                if source == None:  # remove all routing from this param
+                if source == 'None':  # remove all routing from this param
                     for routing in param.findall('modrouting'):
                         param.remove(routing)
                     pprint('Removed all mod routing for parameter {0}'.format(pname))
