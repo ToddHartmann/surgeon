@@ -266,7 +266,7 @@ def setRoutings(args, xroot):
             if source.lower() in modSources:
                 source = str(modSources.index(source.lower()))
             param = xroot.find('/'.join(['parameters', pname]))
-            if param != None:
+            if param is not None:
                 if source == 'None':  # remove all routing from this param
                     for routing in param.findall('modrouting'):
                         param.remove(routing)
@@ -274,7 +274,7 @@ def setRoutings(args, xroot):
                 else:
                     routing = param.find("modrouting[@source='{0}']".format(source))    # Highlander Rule?  (There can be only one routing w/ given source.)
                     if depth == 'None':             # delete the routing if it exists
-                        if routing != None:
+                        if routing is not None:
                             param.remove(routing)
                             pprint('Removed mod route from {0} to {1}'.format(modSources[int(source)], pname))
                     else:
@@ -327,7 +327,7 @@ def setSeqAttrib(xroot, scene, index, aname, avalue):
     stepseqs = xroot.find('stepsequences')
     seq = stepseqs.find("sequence[@scene='{0}'][@i='{1}']".format(scene, index))
 
-    if seq == None:                             # did not find <sequence>
+    if seq is None:                             # did not find <sequence>
         tribs = { 'scene':scene, 'i':index,
                     'loop_start':'0', 'loop_end':'15', 'shuffle':'0.000000'}
         if index == '0':
