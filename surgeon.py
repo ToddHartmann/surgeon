@@ -223,7 +223,7 @@ def setMetas(args, root):
 def setAttrib(xroot, pname, aname, value):
     parameters = xroot.find('parameters')
     param = parameters.find(pname)
-    if param == None:
+    if param is None:
         param = ET.SubElement(parameters, pname, {aname : value})
     else:
         if value == 'True':
@@ -278,7 +278,7 @@ def setRoutings(args, xroot):
                             param.remove(routing)
                             pprint('Removed mod route from {0} to {1}'.format(modSources[int(source)], pname))
                     else:
-                        if routing == None:                                 # make a new one
+                        if routing is None:                                 # make a new one
                             routing = ET.SubElement(param, 'modrouting', \
                                 {'source' : source, 'depth' : depth})
                         else:
