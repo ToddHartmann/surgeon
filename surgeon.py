@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Todd wrote this for the Surge synth project and places it in the public domain.
-__version__ = '1.0.5'
+__version__ = '1.0.6'
 
 import io, argparse, wave, struct, chunk, textwrap
 import sys
@@ -391,9 +391,11 @@ def parseArgs():
             """Upon a VALUE of False, -t will *remove* the attribute as Surge expects.
                If you need an attribute to be False, set it to 0.""",
             """Upon a DEPTH of None, -m will *remove* the routing.""",
-            """Upon a SOURCE of None, -m will *remove all* routing from the parameter.""",
+            """Upon a SOURCE of None, -m will *remove all* routing from the parameter.
+               You will need to supply a dummy value for DEPTH.""",
             """Upon a VALUE of None, -s will *remove* the ATTRIBute of the sequence.""",
-            """Upon an ATTRIB of None, -s will *remove* the sequence.""",
+            """Upon an ATTRIB of None, -s will *remove* the sequence.
+               You will need to supply a dummy VALUE.""",
             """With -cc, use None to leave BIPOLAR, VALUE,
                or LABEL unmodified.  (This means you cannot set LABEL
                to 'None' with this tool.)""",
@@ -407,7 +409,7 @@ def parseArgs():
             """You can use these names for the INDEX of -cc:""",
             ', '.join(cusCons),
             '',
-               """There are no checks on any values.  Use at your own risk."""]]),
+               """There are almost no checks on any values.  Use at your own risk."""]]),
         formatter_class=argparse.RawTextHelpFormatter
     )
 

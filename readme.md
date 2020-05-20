@@ -1,4 +1,5 @@
 # Surgeon
+### Version 1.0.6
 
 * Mangle [Surge](https://surge-synthesizer.github.io/) patches
 * Change parameters and their attributes
@@ -30,7 +31,7 @@ surgeon.py [-h] [-o <b>OUTPUT</b>] [-n <b>NAME</b>] [-ca <b>CATEGORY</b>] [-co <
            <b>INPUT</b>
 
 Operate on Surge patch files, extract wavetables, export and import
-XML. Version 1.0.5.
+XML. Version 1.0.6.
 
   <b>INPUT</b>                                 input patch file name
   -h, --help                            show this help message and exit
@@ -74,9 +75,10 @@ expects.
 Upon a <b>DEPTH</b> of None, -m will *remove* the routing.
 
 Upon a <b>SOURCE</b> of None, -m will *remove all* routing from the
-parameter.
+parameter.  You will need to supply a dummy value for DEPTH.
 
-Upon a <b>VALUE</b> of None, -s will *remove* the attribute.
+Upon a <b>VALUE</b> of None, -s will *remove* the attribute.  You will
+need to supply a dummy VALUE.
 
 Upon an <b>ATTRIB</b> of None, -s will *remove* the sequence.
 
@@ -99,4 +101,4 @@ You can use these names for the <b>INDEX</b> of -cc:
 
 >ctrl1, ctrl2, ctrl3, ctrl4, ctrl5, ctrl6, ctrl7, ctrl8
 
-There are no checks on any values. Use at your own risk.
+There are almost no checks on any values. Use at your own risk.
